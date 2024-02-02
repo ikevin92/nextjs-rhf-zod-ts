@@ -1,95 +1,104 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import { mappedPlans, userSchema } from '@/validations/userSchema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+type Inputs = {
+  name: string
+  email: string
+  password: string
+  confirmPassword: string
+  weight: string
+  plan: string
 }
+
+function Home() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm<Inputs>({
+    resolver: zodResolver(userSchema)
+  })
+
+  const plansOptions = Object.entries(mappedPlans).map(([key, value]) => (
+    <option
+      key={key}
+      value={key}
+    >
+      {value}
+    </option>
+  ))
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit((data) => console.log({ data }))}>
+        <label htmlFor="name">Name</label>
+        <input
+          type="text"
+          id="name"
+          {...register('name')}
+        />
+
+        {errors.name && <p>{errors.name.message}</p>}
+
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          {...register('email')}
+        />
+
+        {errors.email && <p>{errors.email.message}</p>}
+
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          {...register('password')}
+        />
+
+        {errors.password && <p>{errors.password.message}</p>}
+
+        <label htmlFor="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          {...register('confirmPassword')}
+        />
+
+        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+
+        <label htmlFor="weight">Weight</label>
+        <input
+          type="text"
+          id="weight"
+          {...register('weight')}
+        />
+
+        {errors.weight && <p>{errors.weight.message}</p>}
+
+        <label htmlFor="plan">Plan</label>
+        <select
+          id="plan"
+          {...register('plan')}
+        >
+          {plansOptions}
+        </select>
+
+        {errors.plan && <p>{errors.plan.message}</p>}
+
+        <button type="submit">Submit</button>
+      </form>
+
+      <div>
+        <h2>Errors</h2>
+        <pre>{JSON.stringify(watch(), null, 2)}</pre>
+      </div>
+    </div>
+  )
+}
+
+export default Home
