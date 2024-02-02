@@ -24,6 +24,12 @@ export const userSchema = z
     confirmPassword: z
       .string()
       .min(6, 'Password must be at least 6 characters'),
+    dateOfBirth: z
+      .string()
+      .refine(
+        (dob) => new Date(dob).toString() !== 'Invalid Date',
+        'Invalid date of birth'
+      ),
     weight: z
       .string()
       .refine(
